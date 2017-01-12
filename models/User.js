@@ -25,24 +25,29 @@ var userSchema = mongoose.Schema({
 
 userSchema.pre('save', function(next) {
   var user = this;
+  // Check email validity
   if (user.isModified('email')) {
     if (!validator.isEmail(this.email)) {
       var error = new Error("Invalid email.")
       return next(error);
     }
   }
+  // Check if password is modified, then encrypt it thanks to bcrypt
   if (!user.isModified('password')) {
     return next();
   }
-  bcrypt.hash(user.password, null, null, function (err, hash) {
-    if (err) {
-      return next(err);
-    }
-    user.password = hash;
-    next();
-  });
+  else {
+    bcrypt.hash(user.password, null, null, function (err, hash) {
+      if (err) {
+        return next(err);
+      }
+      user.password = hash;
+      next();
+    });
+  }
 });
 
+// Method to compare password to encrypted one
 userSchema.methods.comparePassword = function(password) {
   var user = this;
   return bcrypt.compareSync(password, user.password);

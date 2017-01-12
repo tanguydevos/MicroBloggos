@@ -3,6 +3,7 @@
 var User = require('../models/User');
 
 module.exports = {
+  // Show all users
   show: function(req, res, next) {
     User.find({}, function (err, users) {
       if (err) {
@@ -15,6 +16,7 @@ module.exports = {
       }
     });
   },
+  // Create a new user
   new: function(req, res, next) {
     // Check if users mandatory fields are existing
     if (req.body.email && req.body.password) {
@@ -58,6 +60,7 @@ module.exports = {
       });
     }
   },
+  // Remove an user by email (unique field)
   delete: function(req, res, next) {
     // Check if users mandatory fields are existing
     if (req.params.email) {

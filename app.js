@@ -34,6 +34,7 @@ function launchExpressApp() {
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
+  // Set routes 
   require('./routes')(app);
 
   // catch 404 and forward to error handler
