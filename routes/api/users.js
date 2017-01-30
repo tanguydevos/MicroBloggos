@@ -8,7 +8,8 @@ var express = require('express'),
 
 router.get('/', auth({ secret: secret }), userController.show);
 router.post('/', userController.new);
-router.delete('/delete/:email', auth({ secret: secret }), userController.delete);
 router.post('/authenticate', userController.authenticate);
+router.put('/update/:id', auth({ secret: secret }), userController.update);
+router.delete('/delete/:id', auth({ secret: secret }), userController.delete);
 
 module.exports = router;

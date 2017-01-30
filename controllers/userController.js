@@ -35,23 +35,54 @@ module.exports = {
                         return response.error(res, 500, strings.unexpectedBehaviour);
                     }
                 }
-                response.success(res, strings.userSaved)
+                response.success(res, strings.userSaved);
             });
         } else {
             // Mandatory fields are missing or not found
             response.error(res, 400, strings.missingParameters);
         }
     },
+    // Update an user by email (unique field)
+    update: function(req, res, next) {
+        // Check if users mandatory fields are existing
+        if (req.params.id) {
+            if (req.decoded.admin || (req.params.id === req.decoded.id)) {
+                User.findOne({ _id: req.params.id }, function(err, user) {
+                    if (!user) {
+                        return response.error(res, 404, strings.userNotFound);
+                    } else {
+                        if (req.body.email) { user.email = req.body.email; }
+                        if (req.body.name) { user.name = req.body.name };
+                        if (req.body.password) { user.password = req.body.password };
+                        user.save(function(err) {
+                            if (err) {
+                                // Error code when there is a duplicate key, in this case : the email (unique field)
+                                if (err.code === 11000) {
+                                    return response.error(res, 409, strings.userEmailExists);
+                                }
+                                return response.error(res, 500, strings.unexpectedBehaviour);
+                            }
+                            response.success(res, strings.userUpdated);
+                        });
+                    }
+                });
+            } else {
+                response.error(res, 401, strings.unauthorized);
+            }
+        } else {
+            response.error(res, 400, strings.missingParameters);
+        }
+    },
     // Remove an user by email (unique field)
     delete: function(req, res, next) {
         // Check if users mandatory fields are existing
-        if (req.params.email) {
-            if (req.decoded.admin || (req.params.email === req.decoded.email)) {
-                User.findOneAndRemove(req.params.email, function(err) {
+        if (req.params.id) {
+            if (req.decoded.admin || (req.params.id === req.decoded.id)) {
+                User.findOneAndRemove(req.params.id, function(err) {
                     if (err) {
                         return response.error(res, 500, strings.unexpectedBehaviour);
                     }
-                    response.success(res, strings.userRemoved)
+                    response.success(res, strings.userRemoved);
                 });
             } else {
                 response.error(res, 401, strings.unauthorized);
