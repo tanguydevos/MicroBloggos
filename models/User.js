@@ -1,56 +1,57 @@
 "use strict";
 
-var mongoose = require('mongoose');
-var Schema = new mongoose.Schema;
-var bcrypt = require('bcrypt-nodejs');
-var validator = require('validator');
+var mongoose = require('mongoose'),
+    bcrypt = require('bcrypt-nodejs'),
+    validator = require('validator'),
+    Schema = new mongoose.Schema;
 
 var userSchema = mongoose.Schema({
-  email : {
-    type: String,
-    unique: true,
-    required: true
-  },
-  password : {
-    type: String ,
-    required: true
-  },
-  name : {
-    type: String
-  }
-},
-{
-  timestamps: true
+    email: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String
+    },
+    admin: {
+        type: Boolean
+    }
+}, {
+    timestamps: true
 });
 
 userSchema.pre('save', function(next) {
-  var user = this;
-  // Check email validity
-  if (user.isModified('email')) {
-    if (!validator.isEmail(this.email)) {
-      var error = new Error("Invalid email.")
-      return next(error);
+    var user = this;
+    // Check email validity
+    if (user.isModified('email')) {
+        if (!validator.isEmail(this.email)) {
+            var error = new Error("Invalid email.")
+            return next(error);
+        }
     }
-  }
-  // Check if password is modified, then encrypt it thanks to bcrypt
-  if (!user.isModified('password')) {
-    return next();
-  }
-  else {
-    bcrypt.hash(user.password, null, null, function (err, hash) {
-      if (err) {
-        return next(err);
-      }
-      user.password = hash;
-      next();
-    });
-  }
+    // Check if password is modified, then encrypt it thanks to bcrypt
+    if (!user.isModified('password')) {
+        return next();
+    } else {
+        bcrypt.hash(user.password, null, null, function(err, hash) {
+            if (err) {
+                return next(err);
+            }
+            user.password = hash;
+            next();
+        });
+    }
 });
 
 // Method to compare password to encrypted one
 userSchema.methods.comparePassword = function(password) {
-  var user = this;
-  return bcrypt.compareSync(password, user.password);
+    var user = this;
+    return bcrypt.compareSync(password, user.password);
 };
 
 module.exports = mongoose.model("User", userSchema);

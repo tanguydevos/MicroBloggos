@@ -1,13 +1,12 @@
 "use strict";
 
-var path = require('path');
+var path = require('path'),
+    express = require('express'),
+    router = express.Router();
 
-module.exports = function (app) {
-  // Users routing
-  app.use('/users', require("./users"));
+/* Send all GET requests to a single page (SPA) */
+router.get('*', function(req, res, next) {
+    res.sendFile(path.resolve(__dirname + '/../public/views/template.html'));
+});
 
-  /* Send all GET requests to a single page (SPA) */
-  app.get('*', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../public/views/', 'template.html'));
-  });
-};
+module.exports = router;

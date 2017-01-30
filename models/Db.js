@@ -1,9 +1,10 @@
-'use strict';
+"use strict";
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    config = require('../config');
 
 module.exports = {
-  connect: function(callback) {
-    mongoose.connect("mongodb://jaybles:jaybles@ds161028.mlab.com:61028/jaybles", callback);
-  }
+    connect: function(callback) {
+        mongoose.connect(config.database, callback);
+    }
 };
