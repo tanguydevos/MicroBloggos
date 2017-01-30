@@ -19,7 +19,8 @@ var userSchema = mongoose.Schema({
         type: String
     },
     admin: {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

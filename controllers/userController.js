@@ -109,7 +109,7 @@ module.exports = {
                                 'id': user.id,
                                 'admin': user.admin,
                             }, config.secret, {
-                                expiresIn: '24h'
+                                expiresIn: config.expiresIn
                             });
                             // return the information including token as JSON
                             res.json({

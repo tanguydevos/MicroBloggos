@@ -8,7 +8,7 @@ var express = require('express'),
 
 router.get('/', auth({ secret: secret }), userController.show);
 router.post('/', userController.new);
-router.delete('/delete/:email', userController.delete);
+router.delete('/delete/:email', auth({ secret: secret }), userController.delete);
 router.post('/authenticate', userController.authenticate);
 
 module.exports = router;
