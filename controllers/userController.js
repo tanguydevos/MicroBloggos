@@ -8,7 +8,7 @@ var User = require('../models/User'),
 
 module.exports = {
     // Show all users
-    show: function(req, res, next) {
+    show: function(req, res) {
         User.find({}, 'email', function(err, users) {
             if (err) {
                 return response.error(res, 500, strings.unexpectedBehaviour);
@@ -17,7 +17,7 @@ module.exports = {
         });
     },
     // Create a new user
-    new: function(req, res, next) {
+    new: function(req, res) {
         // Check if users mandatory fields are existing
         if (req.body.email && req.body.password) {
             var newUser = User({
@@ -43,7 +43,7 @@ module.exports = {
         }
     },
     // Update an user by email (unique field)
-    update: function(req, res, next) {
+    update: function(req, res) {
         // Check if users mandatory fields are existing
         if (req.params.id) {
             if (req.decoded.admin || (req.params.id === req.decoded.id)) {
@@ -52,8 +52,8 @@ module.exports = {
                         return response.error(res, 404, strings.userNotFound);
                     } else {
                         if (req.body.email) { user.email = req.body.email; }
-                        if (req.body.name) { user.name = req.body.name };
-                        if (req.body.password) { user.password = req.body.password };
+                        if (req.body.name) { user.name = req.body.name; }
+                        if (req.body.password) { user.password = req.body.password; }
                         user.save(function(err) {
                             if (err) {
                                 // Error code when there is a duplicate key, in this case : the email (unique field)
@@ -74,7 +74,7 @@ module.exports = {
         }
     },
     // Remove an user by email (unique field)
-    delete: function(req, res, next) {
+    delete: function(req, res) {
         // Check if users mandatory fields are existing
         if (req.params.id) {
             if (req.decoded.admin || (req.params.id === req.decoded.id)) {
@@ -92,7 +92,7 @@ module.exports = {
         }
     },
     // Authenticate the user
-    authenticate: function(req, res, next) {
+    authenticate: function(req, res) {
         if (req.body.email && req.body.password) {
             User.findOne({ email: req.body.email }, function(err, user) {
                 if (err) {
@@ -125,4 +125,4 @@ module.exports = {
             response.error(res, 400, strings.missingParameters);
         }
     }
-}
+};

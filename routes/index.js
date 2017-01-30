@@ -5,7 +5,7 @@ var path = require('path'),
     router = express.Router();
 
 /* Send all GET requests to a single page (SPA) */
-router.get('*', function(req, res, next) {
+router.get('*', function(req, res) {
     res.sendFile(path.resolve(__dirname + '/../public/views/template.html'));
 });
 

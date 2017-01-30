@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
     success: function(res, message) {
         res.json({
@@ -11,4 +13,4 @@ module.exports = {
             message: message
         });
     }
-}
+};
