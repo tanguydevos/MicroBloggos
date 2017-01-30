@@ -2,6 +2,8 @@
 
 var User = require('../models/User'),
     config = require('../config'),
+    strings = require('../strings'),
+    response = require('../Utils/response'),
     jwt = require('jsonwebtoken');
 
 module.exports = {
@@ -9,13 +11,9 @@ module.exports = {
     show: function(req, res, next) {
         User.find({}, 'email', function(err, users) {
             if (err) {
-                res.status(500).json({
-                    success: false,
-                    message: "Server error, unexpected behaviour."
-                });
-            } else {
-                res.json(users);
+                return response.error(res, 500, strings.unexpectedBehaviour);
             }
+            res.json(users);
         });
     },
     // Create a new user
@@ -30,59 +28,36 @@ module.exports = {
                 if (err) {
                     // Error code when there is a duplicate key, in this case : the email (unique field)
                     if (err.code === 11000) {
-                        res.status(409).json({
-                            success: false,
-                            message: "User already exists."
-                        });
-                    } else if (err.message === "Invalid email.") {
-                        res.status(400).json({
-                            success: false,
-                            message: err.message
-                        });
+                        return response.error(res, 409, strings.userExists);
+                    } else if (err.name === "InvalidEmail") {
+                        return response.error(res, 400, strings.invalidEmail);
                     } else {
-                        res.status(500).json({
-                            success: false,
-                            message: "Server error, unexpected behaviour."
-                        });
+                        return response.error(res, 500, strings.unexpectedBehaviour);
                     }
-                } else {
-                    res.json({
-                        success: true,
-                        message: "User saved successfully."
-                    });
                 }
+                response.success(res, strings.userSaved)
             });
-        }
-        // Mandatory fields are missing or not found
-        else {
-            res.status(400).json({
-                success: false,
-                message: "Wrong or missing arguments, sorry :)"
-            });
+        } else {
+            // Mandatory fields are missing or not found
+            response.error(res, 400, strings.missingParameters);
         }
     },
     // Remove an user by email (unique field)
     delete: function(req, res, next) {
         // Check if users mandatory fields are existing
         if (req.params.email) {
-            User.findOneAndRemove(req.params.email, function(err) {
-                if (err) {
-                    res.status(500).json({
-                        success: false,
-                        message: "Server error, unexpected behaviour."
-                    });
-                } else {
-                    res.json({
-                        success: true,
-                        message: "User removed successfully."
-                    });
-                }
-            });
+            if (req.decoded.admin || (req.params.email === req.decoded.email)) {
+                User.findOneAndRemove(req.params.email, function(err) {
+                    if (err) {
+                        return response.error(res, 500, strings.unexpectedBehaviour);
+                    }
+                    response.success(res, strings.userRemoved)
+                });
+            } else {
+                response.error(res, 401, strings.unauthorized);
+            }
         } else {
-            res.status(400).json({
-                success: false,
-                message: "Wrong or missing arguments, sorry :)"
-            });
+            response.error(res, 400, strings.missingParameters);
         }
     },
     // Authenticate the user
@@ -90,47 +65,33 @@ module.exports = {
         if (req.body.email && req.body.password) {
             User.findOne({ email: req.body.email }, function(err, user) {
                 if (err) {
-                    res.status(500).json({
-                        success: false,
-                        message: "Server error, unexpected behaviour."
+                    return response.error(res, 500, strings.unexpectedBehaviour);
+                }
+                if (!user) {
+                    return response.error(res, 404, strings.userAuthNotFound);
+                }
+                // check if password matches
+                if (user.comparePassword(req.body.password)) {
+                    // create a token
+                    var token = jwt.sign({
+                        'email': user.email,
+                        'id': user.id,
+                        'admin': user.admin,
+                    }, config.secret, {
+                        expiresIn: config.expiresIn
+                    });
+                    // return the information including token as JSON
+                    res.json({
+                        success: true,
+                        message: strings.userAuthentified,
+                        token: token
                     });
                 } else {
-                    if (!user) {
-                        res.status(404).json({
-                            success: false,
-                            message: 'Authentication failed. User not found.'
-                        });
-                    } else {
-                        // check if password matches
-                        if (user.comparePassword(req.body.password)) {
-                            // create a token
-                            var token = jwt.sign({
-                                'email': user.email,
-                                'id': user.id,
-                                'admin': user.admin,
-                            }, config.secret, {
-                                expiresIn: config.expiresIn
-                            });
-                            // return the information including token as JSON
-                            res.json({
-                                success: true,
-                                message: 'Enjoy your token!',
-                                token: token
-                            });
-                        } else {
-                            res.status(401).json({
-                                success: false,
-                                message: 'Unauthorized.'
-                            });
-                        }
-                    }
+                    response.error(res, 401, strings.unauthorized);
                 }
             });
         } else {
-            res.status(400).json({
-                success: false,
-                message: "Wrong or missing arguments, sorry :)"
-            });
+            response.error(res, 400, strings.missingParameters);
         }
     }
 }

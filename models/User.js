@@ -31,7 +31,8 @@ userSchema.pre('save', function(next) {
     // Check email validity
     if (user.isModified('email')) {
         if (!validator.isEmail(this.email)) {
-            var error = new Error("Invalid email.")
+            var error = new Error();
+            error.name = "InvalidEmail";
             return next(error);
         }
     }

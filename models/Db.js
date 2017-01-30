@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
 
 module.exports = {
     connect: function(callback) {
+        mongoose.Promise = require('bluebird');
         mongoose.connect(config.database, callback);
     }
 };
