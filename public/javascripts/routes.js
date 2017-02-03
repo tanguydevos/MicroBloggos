@@ -1,6 +1,6 @@
 "use strict";
 
-app.config(function ($routeProvider, $locationProvider) {
+app.config(function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: viewsPath + 'index.html'
   }).otherwise({

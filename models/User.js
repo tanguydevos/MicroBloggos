@@ -2,8 +2,7 @@
 
 var mongoose = require('mongoose'),
     bcrypt = require('bcrypt-nodejs'),
-    validator = require('validator'),
-    Schema = new mongoose.Schema;
+    validator = require('validator');
 
 var userSchema = mongoose.Schema({
     email: {

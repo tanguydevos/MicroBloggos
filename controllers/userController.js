@@ -1,19 +1,52 @@
 "use strict";
 
-var User = require('../models/User'),
+var User = require('mongoose').model('User'),
     config = require('../config'),
     strings = require('../strings'),
     response = require('../Utils/response'),
     jwt = require('jsonwebtoken');
 
+// Find an user by Id
+function getUserById(req, res, id, next) {
+    User.findOne({ _id: id }, function(err, user) {
+        // In case of error or no users
+        if (err || !user) {
+            return response.error(res, 404, strings.userNotFound);
+        } else {
+            // Save in request the user
+            req.user = user;
+            // Callback for success
+            next();
+        }
+    });
+}
+
+// Check if user is allowed to access to this route : only himself or admin can validate this function
+function checkOnlyUserAllowed(req, res, next) {
+    if (!req.decoded.admin || (req.params.id !== req.decoded.id)) {
+        response.error(res, 401, strings.unauthorized);
+    }
+    next();
+}
+
 module.exports = {
-    // Show all users
-    show: function(req, res) {
-        User.find({}, 'email', function(err, users) {
+    showAll: function(req, res) {
+        // No security here to restrict access
+        User.find({}, "email name", function(err, users) {
             if (err) {
                 return response.error(res, 500, strings.unexpectedBehaviour);
             }
+            if (users.length === 0) {
+                return response.error(res, 404, strings.userShowAllNotFound);
+            }
             res.json(users);
+        });
+    },
+    // Show an user by ID
+    show: function(req, res) {
+        getUserById(req, res, req.params.id, function() {
+            // In case of success
+            res.json(req.user);
         });
     },
     // Create a new user
@@ -44,52 +77,36 @@ module.exports = {
     },
     // Update an user by email (unique field)
     update: function(req, res) {
-        // Check if users mandatory fields are existing
-        if (req.params.id) {
-            if (req.decoded.admin || (req.params.id === req.decoded.id)) {
-                User.findOne({ _id: req.params.id }, function(err, user) {
-                    if (!user) {
-                        return response.error(res, 404, strings.userNotFound);
-                    } else {
-                        if (req.body.email) { user.email = req.body.email; }
-                        if (req.body.name) { user.name = req.body.name; }
-                        if (req.body.password) { user.password = req.body.password; }
-                        user.save(function(err) {
-                            if (err) {
-                                // Error code when there is a duplicate key, in this case : the email (unique field)
-                                if (err.code === 11000) {
-                                    return response.error(res, 409, strings.userEmailExists);
-                                }
-                                return response.error(res, 500, strings.unexpectedBehaviour);
-                            }
-                            response.success(res, strings.userUpdated);
-                        });
+        checkOnlyUserAllowed(req, res, function() {
+            getUserById(req, res, req.params.id, function() {
+                // In case of success
+                // Fields allowed for update
+                if (req.body.email) { req.user.email = req.body.email; }
+                if (req.body.name) { req.user.name = req.body.name; }
+                if (req.body.password) { req.user.password = req.body.password; }
+                req.user.save(function(err) {
+                    if (err) {
+                        // Error code when there is a duplicate key, in this case : the email (unique field)
+                        if (err.code === 11000) {
+                            return response.error(res, 409, strings.userEmailExists);
+                        }
+                        return response.error(res, 500, strings.unexpectedBehaviour);
                     }
+                    response.success(res, strings.userUpdated);
                 });
-            } else {
-                response.error(res, 401, strings.unauthorized);
-            }
-        } else {
-            response.error(res, 400, strings.missingParameters);
-        }
+            });
+        });
     },
     // Remove an user by email (unique field)
     delete: function(req, res) {
-        // Check if users mandatory fields are existing
-        if (req.params.id) {
-            if (req.decoded.admin || (req.params.id === req.decoded.id)) {
-                User.findOneAndRemove(req.params.id, function(err) {
-                    if (err) {
-                        return response.error(res, 500, strings.unexpectedBehaviour);
-                    }
-                    response.success(res, strings.userRemoved);
-                });
-            } else {
-                response.error(res, 401, strings.unauthorized);
-            }
-        } else {
-            response.error(res, 400, strings.missingParameters);
-        }
+        checkOnlyUserAllowed(req, res, function() {
+            req.user.remove({}, function(err) {
+                if (err) {
+                    return response.error(res, 500, strings.unexpectedBehaviour);
+                }
+                response.success(res, strings.userRemoved);
+            });
+        });
     },
     // Authenticate the user
     authenticate: function(req, res) {

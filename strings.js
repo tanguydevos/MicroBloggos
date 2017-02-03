@@ -4,6 +4,7 @@ module.exports = {
     'unexpectedBehaviour': 'Unexpected behaviour.',
     /* Users strings */
     'userExists': 'User already exists.',
+    'userShowAllNotFound': 'There are no users.',
     'userNotFound': 'User doesn\'t exist.',
     'userEmailExists': 'This email is already taken by another user.',
     'invalidEmail': 'Email is not valid.',
