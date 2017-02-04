@@ -16,12 +16,11 @@
         "jsonwebtoken": "^7.2.1",
         "mongoose": "^4.7.6",
         "morgan": "~1.7.0",
-        "serve-favicon": "~2.3.0",
         "validator": "^6.2.1"
     },
     "apidoc": {
         "name": "Node.js-API",
-        "version": "0.1.0",
+        "version": "0.0.1",
         "description": "ApiDoc of Node.js-API"
     }
 }
