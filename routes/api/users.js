@@ -3,7 +3,7 @@
 var express = require('express'),
     userController = require('../../controllers/userController'),
     auth = require('../../Utils/authenticate'),
-    secret = require('../../config').secret,
+    secret = require('../../config/config').secret,
     router = express.Router();
 
 router.get('/', userController.showAll)

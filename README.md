@@ -1,4 +1,5 @@
-# MicroBloggos
-MicroBloggos is a Single Page Application made with MEAN stack :)
+# Node.js API
+Basically an API RESTful made with Node.js and Express. 
+The database run with MongoDB with the popular ODM Mongoose.
 
-Start the project by a simple npm install then npm start, enjoy.
+Actually there is a CRUD for the User model and an authentification with JWT.
