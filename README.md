@@ -8,10 +8,10 @@ Features are :
 - API documentation available as a HTML page
 - Multilingual
 
-Generate the documentation :
+Generate the documentation (Linux CLI):
 
-apidoc -i routes/ -o apidoc/
+apidoc -i routes/ -o apidoc/ && see apidoc/index.html
 
 Run the project : 
 
-npm install & npm start
+npm install && npm start
