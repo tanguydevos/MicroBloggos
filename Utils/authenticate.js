@@ -1,6 +1,8 @@
 "use strict";
 
-var jwt = require('jsonwebtoken');
+var jwt = require('jsonwebtoken'),
+    config = require('../config/config'),
+    strings = require('../config/strings');
 
 module.exports = function(options) {
     if (!options || !options.secret) {
@@ -17,12 +19,12 @@ module.exports = function(options) {
                     if (err.name === "JsonWebTokenError") {
                         return res.status(401).send({
                             success: false,
-                            message: 'Failed to authenticate token.'
+                            message: strings[config.language].tokenAuthFailed
                         });
                     } else if (err.name === "TokenExpiredError") {
                         return res.status(401).send({
                             success: false,
-                            message: 'Token is expired.'
+                            message: strings[config.language].tokenExpired
                         });
                     }
                 } else {
@@ -33,10 +35,9 @@ module.exports = function(options) {
             });
         } else {
             // if there is no token
-            // return an HTTP response of 403 (access forbidden) and an error message
-            return res.status(403).json({
+            return res.status(401).json({
                 success: false,
-                message: 'No token provided.'
+                message: strings[config.language].tokenNotFound
             });
         }
     });

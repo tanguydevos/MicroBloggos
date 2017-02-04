@@ -2,7 +2,11 @@ module.exports = {
     "en-EN": {
         /* Global errors */
         "missingParameters": "Missing parameters :(",
-        "unexpectedBehaviour": "Unexpected behavior.",
+        "unexpectedBehavior": "Unexpected behavior.",
+        /* Token errors */
+        "tokenAuthFailed": "Failed to authenticate token.",
+        "tokenExpired": "Token is expired.",
+        "tokenNotFound": "Please provide a token.",
         /* Users strings */
         "userExists": "User already exists.",
         "userShowAllNotFound": "There are no users.",
@@ -13,13 +17,18 @@ module.exports = {
         "userRemoved": "User removed successfully.",
         "userUpdated": "User updated successfully.",
         "userAuthNotFound": "Authentication failed because the user not found.",
-        "unauthorized": "Unauthorized.",
+        "userAuthFailed": "The email address or password you entered is not valid.",
+        "forbidden": "Forbidden.",
         "userAuthentified": "User authenticated successfully."
     },
     "fr-FR": {
         /* Global errors */
         "missingParameters": "Paramètres manquants :(",
-        "unexpectedBehaviour": "Comportement inattendu.",
+        "unexpectedBehavior": "Comportement inattendu.",
+        /* Token errors */
+        "tokenAuthFailed": "Impossible d'authentifier le token.",
+        "tokenExpired": "Le token a expiré.",
+        "tokenNotFound": "Merci de fournir un token.",
         /* Users strings */
         "userExists": "L'utilisateur existe déjà.",
         "userShowAllNotFound": "Il n'y a aucun utilisateur.",
@@ -30,7 +39,8 @@ module.exports = {
         "userRemoved": "Utilisateur supprimé avec succès.",
         "userUpdated": "Utilisateur modifié avec succès.",
         "userAuthNotFound": "L'authentification a échoué car l'utilisateur n'existe pas.",
-        "unauthorized": "Non autorisé.",
+        "userAuthFailed": "L'adresse email ou le mot de passe est invalide.",
+        "forbidden": "Accès non autorisé.",
         "userAuthentified": "Utilisateur authentifié avec succès."
     }
 };

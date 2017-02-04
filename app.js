@@ -8,10 +8,6 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     Db = require('./models/Db');
 
-// Set functions
-app.set('views', path.join(__dirname, 'public/views'));
-app.set('view engine', 'jade');
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -25,7 +25,7 @@ var userSchema = mongoose.Schema({
     timestamps: true
 });
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function(next) {
     var user = this;
     // Check email validity
     if (user.isModified('email')) {
@@ -39,7 +39,7 @@ userSchema.pre('save', function (next) {
     if (!user.isModified('password')) {
         return next();
     } else {
-        bcrypt.hash(user.password, null, null, function (err, hash) {
+        bcrypt.hash(user.password, null, null, function(err, hash) {
             if (err) {
                 return next(err);
             }
@@ -50,7 +50,7 @@ userSchema.pre('save', function (next) {
 });
 
 // Method to compare password to encrypted one
-userSchema.methods.comparePassword = function (password) {
+userSchema.methods.comparePassword = function(password) {
     var user = this;
     return bcrypt.compareSync(password, user.password);
 };
