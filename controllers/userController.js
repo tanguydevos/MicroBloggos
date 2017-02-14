@@ -39,14 +39,20 @@ module.exports = {
             if (users.length === 0) {
                 return response.error(res, 404, strings[config.language].userShowAllNotFound);
             }
-            res.json(users);
+            res.json({
+                success: true,
+                users: users
+            });
         });
     },
     // Show an user by ID
     show: function(req, res) {
         getUserById(req, res, req.params._id, function() {
             // In case of success
-            res.json(req.user);
+            res.json({
+                success: true,
+                user: req.user
+            });
         });
     },
     // Create a new user

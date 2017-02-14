@@ -10,7 +10,7 @@ Features are :
 
 Generate the documentation (Linux CLI):
 
-apidoc -i routes/ -o apidoc/ && see apidoc/index.html
+apidoc -i routes/ -o apidoc/ && see apidoc/index.html OR npm run doc
 
 Run the project : 
 

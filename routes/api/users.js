@@ -6,6 +6,18 @@ var express = require('express'),
     secret = require('../../config/config').secret,
     router = express.Router();
 
+/* User routes */
+
+router.get('/', userController.showAll);
+router.get('/:_id', userController.show);
+router.post('/', userController.new);
+router.post('/authenticate', userController.authenticate);
+router.put('/:_id', auth({ secret: secret }), userController.update);
+router.delete('/:_id', auth({ secret: secret }), userController.delete);
+
+module.exports = router;
+
+/* API DOCUMENTATION for apidoc.js */
 /**
  * @apiDefine UnexpectedBehaviorError
  *
@@ -106,19 +118,28 @@ var express = require('express'),
 /**
  * @api {get} /api/users/ Request Users informations
  * @apiPermission none
+ * @apiVersion 0.0.2
  * @apiName GetUsers
  * @apiGroup User
  *
  * @apiSuccess {String} _id Id of the User.
  * @apiSuccess {String} email Email of the User.
- * @apiSuccess {String} name Name of the User.
+ * @apiSuccess {String} [name] Name of the User.
  *
  * @apiSuccessExample Success-Response:
  * 		HTTP/1.1 200 OK
  *		{
- *			"_id": "58947e4b89c8130a5c6287df",
- *			"email": "faucheur@faucheur.fr",
- *			"name": "Faucheur"
+ *			"success": true,
+ *			"users": [
+ *				{
+ *					"_id": "5898d55ccacc3208f0341728",
+ *					"email": "faucheur@faucheur.fr"
+ *				},
+ *				{
+ *					"_id": "5898d5c456ef7714c8216b31",
+ *					"email": "faucheur2@faucheur.fr"
+ *				}
+ *			]
  *		}
  *
  * @apiError UsersNotFound There are no users found.
@@ -132,29 +153,30 @@ var express = require('express'),
  *
  * @apiUse UnexpectedBehaviorError
  */
-router.get('/', userController.showAll);
 
 /**
  * @api {get} /api/users/:_id Request User informations
  * @apiPermission none
+ * @apiVersion 0.0.2
  * @apiName GetUserById
  * @apiGroup User
  *
  * @apiSuccess {String} _id Id of the User.
  * @apiSuccess {String} email Email of the User.
- * @apiSuccess {String} name Name of the User.
+ * @apiSuccess {String} [name] Name of the User.
  *
  * @apiSuccessExample Success-Response:
  * 		HTTP/1.1 200 OK
  *		{
- *			"_id": "58947e4b89c8130a5c6287df",
- *			"email": "faucheur@faucheur.fr",
- *			"name": "Faucheur"
+ *			"success": true,
+ *			"user": {
+ *				"_id": "5898d55ccacc3208f0341728",
+ *				"email": "faucheur@faucheur.fr"
+ *			}
  *		}
  *
  * @apiUse UserNotFoundError
  */
-router.get('/:_id', userController.show);
 
 /**
  * @api {post} /api/users/ Create an User
@@ -196,7 +218,6 @@ router.get('/:_id', userController.show);
  * @apiUse MissingParametersError
  * @apiUse UnexpectedBehaviorError
  */
-router.post('/', userController.new);
 
 /**
  * @api {post} /api/users/authenticate Authenticate an User
@@ -240,7 +261,6 @@ router.post('/', userController.new);
  * @apiUse MissingParametersError
  * @apiUse UnexpectedBehaviorError
  */
-router.post('/authenticate', userController.authenticate);
 
 /**
  * @api {put} /api/users/:_id Update an User
@@ -279,7 +299,6 @@ router.post('/authenticate', userController.authenticate);
  * @apiUse TokenExpiredError
  * @apiUse ForbiddenError
  */
-router.put('/:_id', auth({ secret: secret }), userController.update);
 
 /**
  * @api {delete} /api/users/:_id Delete an User
@@ -306,6 +325,3 @@ router.put('/:_id', auth({ secret: secret }), userController.update);
  * @apiUse TokenExpiredError
  * @apiUse ForbiddenError
  */
-router.delete('/:_id', auth({ secret: secret }), userController.delete);
-
-module.exports = router;
